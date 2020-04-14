@@ -60,13 +60,7 @@ cell_assay_NA_removed <- drop_na(cell_assay)
 ```
 
 This might be fine if we know exactly where our NAs are and we are happy with losing that much of our dataset
-```{r}
-cell_assay_NA_removed <- drop_na(cell_assay)
-```
-
 But if we want to tackle this with a little more finesse, how about removing only those NAs from a specific column - Value?
-
-
 
 
 ```{r}
@@ -93,7 +87,4 @@ Question: do you know how to reverse this statement to only keep the rows that a
 ```{r}
 # Answer
 filter(cell_assay, !is.na(Value))
-```
-```{r}
-skim(cell_assay)
 ```
