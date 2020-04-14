@@ -1,0 +1,99 @@
+---
+title: "Week 3 notes Phil L"
+output: html_notebook
+---
+
+The `Luciferase cell assay` dataset is a type of R object called a *dataframe* (in tidyverse, another name for dataframes are *tibbles*). It looks like a typical table, but in R, it has several important features:
+
+1. Dataframe is a set of columns (which are vectors)
+2. All the columns are the same length.
+3. The content of each column is of the same type  e.g. Factor, integer, numerical etc. 
+
+```{r}
+library(tidyverse)
+cell_assay <- read.csv("Luciferase_cell_assay.csv")
+head(cell_assay)### shpw first 10 rows of data
+
+```
+
+```{r}
+class(cell_assay) # identifies as dataframe/tibble or matrix
+str(cell_assay) # much more detailed, gives type of content in each column
+glimpse(cell_assay) # details but more glanceable than str
+
+library(skimr) # a package to get a high-level overview of an object
+skim(cell_assay)
+```
+
+
+### Missing data
+
+R is one of the few programming languages that implicitly accomodates and deals with missing data. Your data will be messy and missing data will be one of your issues. In fact, in almost any large data analysis project, you will spend most of the time of cleaning up and tidying up the data so that downstream analyses are possible.
+
+Did you notice that our data has lots of missing values? They are marked by a special word `NA`.
+
+```{r}
+view(cell_assay)### open a new window to scan through whole dataset
+```
+
+
+Missing data make many calculations impossible, because `NA` "contaminate" downstream calculations. For example - how much is 4*NA?
+
+```{r}
+4 * NA
+```
+
+```{r}
+aa <- c(1, 2, NA, 4)
+
+aa * 50
+```
+
+
+There are several functions in R to deal with missing data
+
+1. If you want to simply remove every row where at least one value is missing, use `drop_na`.
+
+```{r}
+cell_assay_NA_removed <- drop_na(cell_assay)
+
+```
+
+This might be fine if we know exactly where our NAs are and we are happy with losing that much of our dataset
+```{r}
+cell_assay_NA_removed <- drop_na(cell_assay)
+```
+
+But if we want to tackle this with a little more finesse, how about removing only those NAs from a specific column - Value?
+
+
+
+
+```{r}
+filter(cell_assay, Value == NA) # doesn't work
+filter(cell_assay, Value == "NA") # doesn't work
+```
+
+Why not? Is the function wrong?
+
+```{r}
+Aag2_cell_assay <- filter(cell_assay, Cell.type == "Aag2") ###nope this seems fine! 
+```
+
+
+NA is a special word in R, it's not a character vector
+You need to use function `is.na` to determine which rows have missing data and then filter them out.
+
+```{r}
+filter(cell_assay, is.na(Value)) # this keeps the rows with missing data
+```
+
+Question: do you know how to reverse this statement to only keep the rows that are *not* missing?
+
+```{r}
+# Answer
+filter(cell_assay, !is.na(Value))
+```
+```{r}
+skim(cell_assay)
+```
