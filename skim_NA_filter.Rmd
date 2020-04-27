@@ -9,13 +9,16 @@ The `Luciferase cell assay` dataset is a type of R object called a *dataframe* (
 2. All the columns are the same length.
 3. The content of each column is of the same type  e.g. Factor, integer, numerical etc. 
 
+
+First let's load tidyverse - we will be usig that today - and then take a look at our data
 ```{r}
 library(tidyverse)
 cell_assay <- read.csv("Luciferase_cell_assay.csv")
-head(cell_assay)### shpw first 10 rows of data
+head(cell_assay)### show first 10 rows of data
 
 ```
 
+It's always important to check your data after inputting. There are many ways to do this
 ```{r}
 class(cell_assay) # identifies as dataframe/tibble or matrix
 str(cell_assay) # much more detailed, gives type of content in each column
@@ -24,7 +27,6 @@ glimpse(cell_assay) # details but more glanceable than str
 library(skimr) # a package to get a high-level overview of an object
 skim(cell_assay)
 ```
-
 
 ### Missing data
 
@@ -42,7 +44,7 @@ Missing data make many calculations impossible, because `NA` "contaminate" downs
 ```{r}
 4 * NA
 ```
-
+When we try and do downstream calculations that include `NA` 
 ```{r}
 aa <- c(1, 2, NA, 4)
 
@@ -50,7 +52,7 @@ aa * 50
 ```
 
 
-There are several functions in R to deal with missing data
+There are several functions in R to deal with missing data - but you must understand that removing data has consequences for downstream analyses  - is it truly `missing at random`? If not it can be problematic for your data 
 
 1. If you want to simply remove every row where at least one value is missing, use `drop_na`.
 
@@ -68,7 +70,7 @@ filter(cell_assay, Value == NA) # doesn't work
 filter(cell_assay, Value == "NA") # doesn't work
 ```
 
-Why not? Is the function wrong?
+Why not? Is the function wrong? 
 
 ```{r}
 Aag2_cell_assay <- filter(cell_assay, Cell.type == "Aag2") ###nope this seems fine! 
@@ -76,7 +78,7 @@ Aag2_cell_assay <- filter(cell_assay, Cell.type == "Aag2") ###nope this seems fi
 
 
 NA is a special word in R, it's not a character vector
-You need to use function `is.na` to determine which rows have missing data and then filter them out.
+You need to use function `is.na` to determine which rows have missing data and then filter them out. Rstudio may even have already prompted you to do just this
 
 ```{r}
 filter(cell_assay, is.na(Value)) # this keeps the rows with missing data
@@ -88,3 +90,11 @@ Question: do you know how to reverse this statement to only keep the rows that a
 # Answer
 filter(cell_assay, !is.na(Value))
 ```
+We could use mutate to convert any numeric factors from NA to 0 - but this should be treated with extreme caution `0` and missingd data `NA` are not the same thing. 
+```{r}
+cell_assay0 <- cell_assay
+cell_assay0 %>%
+  mutate_if(is.numeric, funs(ifelse(is.na(.), 0, .)))
+```
+
+When we look at linear models  - we will revisit missing data 
