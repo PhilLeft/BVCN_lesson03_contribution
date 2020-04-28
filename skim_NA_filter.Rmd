@@ -59,8 +59,7 @@ aa <- c(1, 2, NA, 4)
 aa * 50
 ```
 
-
-There are several functions in R to deal with missing data - but you must understand that removing data has consequences for downstream analyses  - is it truly `missing at random`? If not it can be problematic for your data 
+There are several functions in R to deal with missing data - but you must understand that removing data has consequences for downstream analyses  - is it truly `missing at random` (more on this subject at the end of this lesson)? If not it can be problematic for your data 
 
 1. If you want to simply remove every row where at least one value is missing, use `drop_na`.
 
@@ -72,7 +71,6 @@ cell_assay_NA_removed <- drop_na(cell_assay)
 This might be fine if we know exactly where our NAs are and we are happy with losing that much of our dataset
 But if we want to tackle this with a little more finesse, how about removing only those NAs from a specific column - Value?
 
-
 ```{r}
 filter(cell_assay, Value == NA) # doesn't work
 filter(cell_assay, Value == "NA") # doesn't work
@@ -83,7 +81,6 @@ Why not? Is the function wrong?
 ```{r}
 Aag2_cell_assay <- filter(cell_assay, Cell.type == "Aag2") ###nope this seems fine! 
 ```
-
 
 NA is a special word in R, it's not a character vector
 You need to use function `is.na` to determine which rows have missing data and then filter them out. Rstudio may even have already prompted you to do just this
@@ -98,6 +95,7 @@ Question: do you know how to reverse this statement to only keep the rows that a
 # Answer
 filter(cell_assay, !is.na(Value))
 ```
+
 # Imputation
 Indeed there are lots of ways of dealing with NA data. 
 
@@ -120,7 +118,6 @@ cell_assay_zeros_for_nas2 <- cell_assay %>%
 cell_assay_zeros_for_nas2
 ```
 
-
 We can do this for every column instead of just the value column, with slightly more complex syntax.
 ```{r}
 cell_assay_zeros_for_nas_all <- cell_assay %>%
@@ -129,7 +126,6 @@ cell_assay_zeros_for_nas_all
 ```
 
 Observe here, that the data in Gene.origin.1 are still all NA, because 0 is not a legitimate value for a factor.
-
 
 ## Imputing with median values
 
@@ -145,10 +141,7 @@ A problem with imputing with medians or means, is that it tends to make the stan
 
 The code to do these things are technical, and so we won't get into them here. If this is a problem for you though, consider the `mice` and `amelia` packages.
 
-
-
 # Data missing not at random
 Data that are missing not-at random are ones where the missingness of a category relates to some parameters. One good example is that most oceanographic time series measurments tend to show up as missing when the weather is bad. Treating these as random will likely bias downstream statistics. Fortunately there are lots of good statistics out there that let you deal with data with NA values that might not be random. They are beyond the scope of this lesson.
-
 
 When we look at linear models  - we will revisit missing data 
