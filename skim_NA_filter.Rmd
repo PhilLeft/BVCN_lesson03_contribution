@@ -43,7 +43,7 @@ R is one of the few programming languages that implicitly accomodates and deals 
 Did you notice that our data has lots of missing values? They are marked by a special word `NA`.
 
 ```{r}
-view(cell_assay)### open a new window to scan through whole dataset
+view(cell_assay) ### open a new window to scan through whole dataset
 ```
 
 
@@ -98,11 +98,57 @@ Question: do you know how to reverse this statement to only keep the rows that a
 # Answer
 filter(cell_assay, !is.na(Value))
 ```
-We could use mutate to convert any numeric factors from NA to 0 - but this should be treated with extreme caution `0` and missingd data `NA` are not the same thing. 
+# Imputation
+Indeed there are lots of ways of dealing with NA data. 
+
+## Imputing with zeros
+We could use mutate to convert any numeric factors from NA to 0 - but this should be treated with extreme caution `0` and missingd data `NA` are not the same thing.
+
+The column value has lots of NAs in it. Lets replace those with zeros.
+
 ```{r}
-cell_assay0 <- cell_assay
-cell_assay0 %>%
-  mutate_if(is.numeric, funs(ifelse(is.na(.), 0, .)))
+cell_assay_zeros_for_nas_all <-cell_assay %>%
+  mutate(Value = ifelse(is.na(Value), 0, Value))
+cell_assay_zeros_for_nas_all
 ```
+
+Another way of doing the above
+
+```{r}
+cell_assay_zeros_for_nas2 <- cell_assay %>%
+  replace_na(list(Value = 0))
+cell_assay_zeros_for_nas2
+```
+
+
+We can do this for every column instead of just the value column, with slightly more complex syntax.
+```{r}
+cell_assay_zeros_for_nas_all <- cell_assay %>%
+  mutate_if(is.numeric, funs(ifelse(is.na(.), 0, .)))
+cell_assay_zeros_for_nas_all
+```
+
+Observe here, that the data in Gene.origin.1 are still all NA, because 0 is not a legitimate value for a factor.
+
+
+## Imputing with median values
+
+Just like we filled in with zeros above, we can also fill in with mean or median values. Lets do this for just the values column again.
+
+```{r}
+cell_assay %>%
+  mutate(Value = ifelse(is.na(Value), median(na.omit(Value)), Value))
+```
+
+## Multiple imputation
+A problem with imputing with medians or means, is that it tends to make the standard deviations look smaller. One way around this is to fill in with random data that have characteristics like your data. A problem with this approach is that your results end up depending on which random values you fill in. One thing people sometimes do is fill in with different random data several times, run their statistics on each imputed data frame, and then perform their analysis on each. 
+
+The code to do these things are technical, and so we won't get into them here. If this is a problem for you though, consider the `mice` and `amelia` packages.
+
+
+
+# Data missing not at random
+Data that are missing not-at random are ones where the missingness of a category relates to some parameters. One good example is that most oceanographic time series measurments tend to show up as missing when the weather is bad. Treating these as random will likely bias downstream statistics. Fortunately there are lots of good statistics out there that let you deal with data with NA values that might not be random. They are beyond the scope of this lesson.
+
 
 When we look at linear models  - we will revisit missing data 
