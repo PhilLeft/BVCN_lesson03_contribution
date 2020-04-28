@@ -21,9 +21,17 @@ head(cell_assay)### show first 10 rows of data
 It's always important to check your data after inputting. There are many ways to do this
 ```{r}
 class(cell_assay) # identifies as dataframe/tibble or matrix
-str(cell_assay) # much more detailed, gives type of content in each column
-glimpse(cell_assay) # details but more glanceable than str
+```
 
+```{r}
+str(cell_assay) # much more detailed, gives type of content in each column
+```
+
+```{r}
+glimpse(cell_assay) # details but more glanceable than str
+```
+
+```{r}
 library(skimr) # a package to get a high-level overview of an object
 skim(cell_assay)
 ```
